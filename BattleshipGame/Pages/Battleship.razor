@@ -28,14 +28,14 @@ else
     private const int Size = 10;
     private bool _areShipsDefeated;
 
-    private CellStatus[,] Ships { get; set; } = default!;
+    private ShipStatus[,] Ships { get; set; } = default!;
 
     protected override void OnInitialized()
     {
         Ships = GameEngine.InitializeGame(Size);
     }
     
-    private async Task ShipsChanged(CellStatus[,] ships)
+    private async Task ShipsChanged(ShipStatus[,] ships)
     {
         Ships = ships;
         var areAllShipsSunk = GameEngine.AreAllShipsSunk(Ships);

@@ -1,6 +1,6 @@
 namespace BattleshipGame.Enums;
 
-public enum CellStatus
+public enum ShipStatus
 {
     None,
     Ship,

@@ -16,7 +16,7 @@
                     var column = j;
                     
                     <Cell Coordinate="@(new Coordinate(row, column))" 
-                          CellStatus="@Ships[row, column]" 
+                          ShipStatus="@Ships[row, column]" 
                           OnShipsChanged="@OnShipsChanged" />
                 }
             </div>
@@ -27,11 +27,11 @@
 @code{
 
     [CascadingParameter]
-    public CellStatus[,] Ships { get; set; } = default!;
+    public ShipStatus[,] Ships { get; set; } = default!;
 
     [CascadingParameter]
     public bool AreShipsDefeated { get; set; }
     
     [Parameter]
-    public EventCallback<CellStatus[,]> OnShipsChanged { get; set; }
+    public EventCallback<ShipStatus[,]> OnShipsChanged { get; set; }
 }

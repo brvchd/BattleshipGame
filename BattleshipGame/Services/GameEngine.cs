@@ -7,24 +7,24 @@ namespace BattleshipGame.Services;
 
 public interface IGameEngine
 {
-    CellStatus[,] InitializeGame(int boardSize);
+    ShipStatus[,] InitializeGame(int boardSize);
     Coordinate GetRandomCoordinate(Random random, int size);
     ShipDirection GetRandomDirection(Random random);
     Coordinate GetEndCoordinate(Coordinate startCoordinate, int shipLength, ShipDirection shipDirection);
-    bool AreAllShipsSunk(CellStatus[,] ships);
-    void PlaceShip(ShipType shipType, Coordinate startCoordinate, ShipDirection shipDirection, CellStatus[,] ships);
+    bool AreAllShipsSunk(ShipStatus[,] ships);
+    void PlaceShip(ShipType shipType, Coordinate startCoordinate, ShipDirection shipDirection, ShipStatus[,] ships);
     bool CoordinateIsValid(Coordinate coordinate, int boardSize);
 
-    bool CanPlaceShip(ShipType shipType, Coordinate startCoordinate, ShipDirection shipDirection, CellStatus[,] ships,
+    bool CanPlaceShip(ShipType shipType, Coordinate startCoordinate, ShipDirection shipDirection, ShipStatus[,] ships,
         int boardSize);
 }
 
 public class GameEngine : IGameEngine
 {
-    public CellStatus[,] InitializeGame(int boardSize)
+    public ShipStatus[,] InitializeGame(int boardSize)
     {
         var random = new Random();
-        var ships = new CellStatus[10, 10];
+        var ships = new ShipStatus[10, 10];
 
         foreach (var shipType in ShipTypes.Types)
         {
@@ -68,11 +68,11 @@ public class GameEngine : IGameEngine
         return new Coordinate(startCoordinate.Row + shipLength - 1, startCoordinate.Column);
     }
 
-    public bool AreAllShipsSunk(CellStatus[,] ships)
+    public bool AreAllShipsSunk(ShipStatus[,] ships)
     {
         foreach (var ship in ships)
         {
-            if (ship is CellStatus.Ship)
+            if (ship is ShipStatus.Ship)
                 return false;
         }
 
@@ -80,7 +80,7 @@ public class GameEngine : IGameEngine
     }
 
     public bool CanPlaceShip(ShipType shipType, Coordinate startCoordinate,
-        ShipDirection shipDirection, CellStatus[,] ships, int boardSize)
+        ShipDirection shipDirection, ShipStatus[,] ships, int boardSize)
     {
         var endCoordinate = GetEndCoordinate(startCoordinate, shipType.Length, shipDirection);
 
@@ -93,7 +93,7 @@ public class GameEngine : IGameEngine
         {
             for (var column = startCoordinate.Column; column <= endCoordinate.Column; column++)
             {
-                if (ships[row, column] != CellStatus.None)
+                if (ships[row, column] != ShipStatus.None)
                     return false;
             }
         }
@@ -106,7 +106,7 @@ public class GameEngine : IGameEngine
             coordinate.Column >= 0 && coordinate.Column < boardSize;
 
     public void PlaceShip(ShipType shipType, Coordinate startCoordinate, ShipDirection shipDirection,
-        CellStatus[,] ships)
+        ShipStatus[,] ships)
     {
         var endCoordinate = GetEndCoordinate(startCoordinate, shipType.Length, shipDirection);
 
@@ -114,7 +114,7 @@ public class GameEngine : IGameEngine
         {
             for (var column = startCoordinate.Column; column <= endCoordinate.Column; column++)
             {
-                ships[row, column] = shipType.CellStatus;
+                ships[row, column] = shipType.ShipStatus;
             }
         }
     }

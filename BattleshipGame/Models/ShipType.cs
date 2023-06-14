@@ -2,4 +2,4 @@ using BattleshipGame.Enums;
 
 namespace BattleshipGame.Models;
 
-public record ShipType(string Name, int Length, int Quantity, CellStatus CellStatus);
+public record ShipType(string Name, int Length, int Quantity, ShipStatus ShipStatus);
