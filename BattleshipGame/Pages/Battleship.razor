@@ -1,0 +1,56 @@
+@page "/"
+@using BattleshipGame.Enums
+@using BattleshipGame.Services
+
+@inject IGameEngine GameEngine
+
+<PageTitle>Guestline - Battleship</PageTitle>
+
+@if (_areShipsDefeated)
+{
+    <h4>Congrats! You've successfully destroyed all the ships!</h4>
+    <h5>Restart the game?</h5>
+    <button class="btn btn-primary" @onclick="@RestartGame">Restart</button>
+}
+else
+{
+    <h3>Welcome to the Battleship game!</h3>
+    
+    <NumbersRow RowCount="@Size"/>
+    <CascadingValue Value="@Ships">
+        <CascadingValue Value="@_areShipsDefeated">
+            <Grid OnShipsChanged="@(ShipsChanged)"/>
+        </CascadingValue>
+    </CascadingValue>
+}
+
+@code {
+    private const int Size = 10;
+    private bool _areShipsDefeated;
+
+    private CellStatus[,] Ships { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        Ships = GameEngine.InitializeGame(Size);
+    }
+    
+    private async Task ShipsChanged(CellStatus[,] ships)
+    {
+        Ships = ships;
+        var areAllShipsSunk = GameEngine.AreAllShipsSunk(Ships);
+        
+        if (areAllShipsSunk)
+            _areShipsDefeated = true;
+        
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void RestartGame()
+    {
+        _areShipsDefeated = false;
+        Ships = GameEngine.InitializeGame(Size);
+    }
+    
+    
+}
