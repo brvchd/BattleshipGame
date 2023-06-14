@@ -24,7 +24,7 @@ public class GameEngine : IGameEngine
     public ShipStatus[,] InitializeGame(int boardSize)
     {
         var random = new Random();
-        var ships = new ShipStatus[10, 10];
+        var ships = new ShipStatus[boardSize, boardSize];
 
         foreach (var shipType in ShipTypes.Types)
         {
