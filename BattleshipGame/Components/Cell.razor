@@ -1,7 +1,7 @@
 @using BattleshipGame.Enums
 @using BattleshipGame.Models
 
-<div class=@($"grid-rectangle {_cssClass}") @onclick="@HandleClick">
+<div class=@($"grid-rectangle {_cssClass}") @onclick="@HandleCellClick">
     @if (ShipStatus is ShipStatus.Miss)
     {
         <img src="Miss small.png" style="width: 48px; height: 48px" alt="miss-small"/>
@@ -12,40 +12,35 @@
     }
 </div>
 
-@code
-{
-    [CascadingParameter]
-    public ShipStatus[,] Ships { get; set; } = default!;
+@code {
     
-    [CascadingParameter]
-    public bool AreShipsDefeated { get; set; }
-
-    [Parameter]
-    public Coordinate Coordinate { get; set; } = default!;
+    [Parameter, EditorRequired]
+    public int Row { get; set; }
     
-    [Parameter]
-    public EventCallback<ShipStatus[,]> OnShipsChanged { get; set; }
+    [Parameter, EditorRequired]
+    public int Column { get; set; }
+    
+    [Parameter, EditorRequired]
+    public EventCallback<(Coordinate, ShipStatus)> OnCellShoot { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public ShipStatus ShipStatus { get; set; } = ShipStatus.None;
 
     private string _cssClass = string.Empty;
 
-    private async Task HandleClick()
+    private async Task HandleCellClick()
     {
         if (ShipStatus == ShipStatus.Ship)
         {
-            Ships[Coordinate.Row, Coordinate.Column] = ShipStatus.Hit;
             ShipStatus = ShipStatus.Hit;
         }
         else if (ShipStatus == ShipStatus.None)
         {
-            Ships[Coordinate.Row, Coordinate.Column] = ShipStatus.Miss;
             ShipStatus = ShipStatus.Miss;
         }
-        _cssClass = "disable-events";
-        await OnShipsChanged.InvokeAsync(Ships);
         
+        _cssClass = "disable-events";
+        await OnCellShoot.InvokeAsync((new(Row,Column), ShipStatus));
     }
 
 }

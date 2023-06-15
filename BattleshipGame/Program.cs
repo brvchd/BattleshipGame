@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddScoped<IGameEngine, GameEngine>();
+builder.Services.AddSingleton<IGameEngine, GameEngine>();
 
 var app = builder.Build();
 

@@ -1,6 +1,8 @@
-@page "/"
 @using BattleshipGame.Enums
+@using BattleshipGame.Models
 @using BattleshipGame.Services
+
+@page "/"
 
 @inject IGameEngine GameEngine
 
@@ -15,42 +17,38 @@
 else
 {
     <h3>Welcome to the Battleship game!</h3>
-    
+
     <NumbersRow RowCount="@Size"/>
-    <CascadingValue Value="@Ships">
-        <CascadingValue Value="@_areShipsDefeated">
-            <Grid OnShipsChanged="@(ShipsChanged)"/>
-        </CascadingValue>
-    </CascadingValue>
+    <Grid OnCellShoot="@CellShoot" Ships="@_ships"/>
 }
 
 @code {
+
     private const int Size = 10;
     private bool _areShipsDefeated;
 
-    private ShipStatus[,] Ships { get; set; } = default!;
+    private ShipStatus[,] _ships = default!;
 
     protected override void OnInitialized()
     {
-        Ships = GameEngine.InitializeGame(Size);
+        _ships = GameEngine.InitializeGame(Size);
     }
-    
-    private async Task ShipsChanged(ShipStatus[,] ships)
+
+    private async Task CellShoot((Coordinate coordinate, ShipStatus shipStatus) cellData)
     {
-        Ships = ships;
-        var areAllShipsSunk = GameEngine.AreAllShipsSunk(Ships);
-        
+        _ships[cellData.coordinate.Row, cellData.coordinate.Column] = cellData.shipStatus;
+        var areAllShipsSunk = GameEngine.AreAllShipsSunk(_ships);
+
         if (areAllShipsSunk)
             _areShipsDefeated = true;
-        
+
         await InvokeAsync(StateHasChanged);
     }
 
     private void RestartGame()
     {
         _areShipsDefeated = false;
-        Ships = GameEngine.InitializeGame(Size);
+        _ships = GameEngine.InitializeGame(Size);
     }
-    
-    
+
 }
