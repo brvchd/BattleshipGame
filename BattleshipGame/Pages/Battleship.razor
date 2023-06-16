@@ -32,11 +32,13 @@ else
     };
     
     private bool _areShipsDefeated;
-    private ShipStatus[,] _ships = default!;
+    private ShipStatus[,] _ships = new ShipStatus[0,0];
 
     protected override void OnInitialized()
     {
-        InitializeShips();
+        var initializedShips = GameEngine.InitializeGame(Size, _shipTypes);
+        if (initializedShips is not null)
+            _ships = initializedShips;
     }
 
     private async Task CellShoot((Coordinate coordinate, ShipStatus shipStatus) cellData)
