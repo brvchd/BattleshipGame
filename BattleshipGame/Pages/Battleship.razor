@@ -26,12 +26,17 @@ else
 
     private const int Size = 10;
     
+    private readonly ShipType[] _shipTypes = {
+        new(Name: "Battleship", Length: 5, Quantity: 1, ShipStatus: ShipStatus.Ship),
+        new(Name: "Destroyer", Length: 4, Quantity: 2, ShipStatus: ShipStatus.Ship)
+    };
+    
     private bool _areShipsDefeated;
     private ShipStatus[,] _ships = default!;
 
     protected override void OnInitialized()
     {
-        _ships = GameEngine.InitializeGame(Size);
+        _ships = GameEngine.InitializeGame(Size, _shipTypes);
     }
 
     private async Task CellShoot((Coordinate coordinate, ShipStatus shipStatus) cellData)
@@ -48,7 +53,7 @@ else
     private void RestartGame()
     {
         _areShipsDefeated = false;
-        _ships = GameEngine.InitializeGame(Size);
+        _ships = GameEngine.InitializeGame(Size, _shipTypes);
     }
 
 }

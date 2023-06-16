@@ -1,38 +1,136 @@
 using BattleshipGame.Enums;
-using BattleshipGame.Services;
+using BattleshipGame.Models;
 using FluentAssertions;
-using FluentAssertions.Execution;
 
 namespace BattleshipGame.Tests;
 
-public class GameEngineTests
+public class GameEngineTests : IClassFixture<GameEngineFixture>
 {
-    [Fact]
-    public void GetRandomCoordinate_ShouldReturnProperCoordinate()
-    {
-        var gameEngine = new GameEngine();
-        var random = new Random();
-        var boardSize = 10;
-        
-        var coordinate = gameEngine.GetRandomCoordinate(random, boardSize);
+    private readonly GameEngineFixture _gameEngineFixture;
 
-        using (new AssertionScope())
-        {
-            coordinate.Should().NotBeNull();
-            coordinate.Row.Should().BeInRange(0, 10);
-            coordinate.Column.Should().BeInRange(0, 10);
-        }
+    public GameEngineTests(GameEngineFixture gameEngineFixture)
+    {
+        _gameEngineFixture = gameEngineFixture;
     }
 
     [Fact]
-    public void GetRandomDirection_ShouldReturnHorizontalOrVertical()
+    public void InitializeGame_BoardsSize10_ShouldReturn_ShipsArrayOfLength100()
     {
-        var random = new Random();
-        var gameEngine = new GameEngine();
+        // Arrange
+        ShipType[] shipTypes =
+        {
+            new(Name: "Battleship", Length: 5, Quantity: 1, ShipStatus: ShipStatus.Ship),
+            new(Name: "Destroyer", Length: 4, Quantity: 2, ShipStatus: ShipStatus.Ship)
+        };
 
-        var direction = gameEngine.GetRandomDirection(random);
-        
-        direction.Should().BeOneOf(ShipDirection.Horizontal, ShipDirection.Vertical);
+        // Act
+        var ships = _gameEngineFixture.GameEngine.InitializeGame(10, shipTypes);
+
+        // Assert
+        ships.Should().NotBeNull();
+        ships!.Length.Should().Be(100);
+    }
+
+    [Fact]
+    public void InitializeGame_BoardsSize10_ShouldReturn_ArrayWith13ShipCells()
+    {
+        //Arrange 
+        var shipsCount = 0;
+        ShipType[] shipTypes =
+        {
+            new(Name: "Battleship", Length: 5, Quantity: 1, ShipStatus: ShipStatus.Ship),
+            new(Name: "Destroyer", Length: 4, Quantity: 2, ShipStatus: ShipStatus.Ship)
+        };
+
+        // Act
+        var ships = _gameEngineFixture.GameEngine.InitializeGame(10, shipTypes);
+
+        // Assert
+        ships.Should().NotBeNull();
+
+        foreach (var ship in ships!)
+        {
+            if (ship == ShipStatus.Ship)
+                shipsCount++;
+        }
+
+        shipsCount.Should().Be(13);
+    }
+
+    [Fact]
+    public void InitializeGame_BoardsSize0_ShouldReturn_Null()
+    {
+        //Arrange 
+        ShipType[] shipTypes =
+        {
+            new(Name: "Battleship", Length: 5, Quantity: 1, ShipStatus: ShipStatus.Ship),
+            new(Name: "Destroyer", Length: 4, Quantity: 2, ShipStatus: ShipStatus.Ship)
+        };
+
+        // Act
+        var ships = _gameEngineFixture.GameEngine.InitializeGame(0, shipTypes);
+
+        // Assert
+        ships.Should().BeNull();
+    }
+
+    [Fact]
+    public void InitializeGame_BoardsSize5_ShipLengthExceedsBoardSize_ShouldReturn_Null()
+    {
+        //Arrange 
+        ShipType[] shipTypes = { new(Name: "Battleship", Length: 6, Quantity: 1, ShipStatus: ShipStatus.Ship) };
+
+        // Act
+        var ships = _gameEngineFixture.GameEngine.InitializeGame(5, shipTypes);
+
+        // Assert
+        ships.Should().BeNull();
+    }
+
+    [Fact]
+    public void AreAllShipsSunk_BoardIsEmpty__ShouldReturn_True()
+    {
+        //Arrange 
+        var emptyBoard = new ShipStatus[0, 0];
+
+        // Act
+        var ships = _gameEngineFixture.GameEngine.AreAllShipsSunk(emptyBoard);
+
+        // Assert
+        ships.Should().BeTrue();
     }
     
+    [Fact]
+    public void AreAllShipsSunk_BoardContainsAliveShips__ShouldReturn_False()
+    {
+        // Arrange 
+        var emptyArray = new ShipStatus[3, 3];
+        for (var i = 0; i < 3; i++)
+        {
+            emptyArray[1,i] = ShipStatus.Ship;
+        }
+        
+        // Act
+        var ships = _gameEngineFixture.GameEngine.AreAllShipsSunk(emptyArray);
+
+        // Assert
+        ships.Should().BeFalse();
+    }
+    
+    [Fact]
+    public void AreAllShipsSunk_AllShipsHitOnBoard__ShouldReturn_True()
+    {
+        // Arrange 
+        var emptyArray = new ShipStatus[3, 3];
+        for (var i = 0; i < 3; i++)
+        {
+            emptyArray[1,i] = ShipStatus.Hit;
+        }
+        
+        // Act
+        var ships = _gameEngineFixture.GameEngine.AreAllShipsSunk(emptyArray);
+
+        // Assert
+        ships.Should().BeTrue();
+    }
 }
