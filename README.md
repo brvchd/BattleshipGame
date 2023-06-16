@@ -1,4 +1,3 @@
-[![Project master build status](https://github.com/brvchd/BattleshipGame/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/brvchd/BattleshipGame/actions/workflows/dotnet.yml)
 # BattleshipGame
 <h2>Requirements</h2>
 <ol>
