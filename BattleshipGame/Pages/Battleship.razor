@@ -36,7 +36,7 @@ else
 
     protected override void OnInitialized()
     {
-        _ships = GameEngine.InitializeGame(Size, _shipTypes);
+        InitializeShips();
     }
 
     private async Task CellShoot((Coordinate coordinate, ShipStatus shipStatus) cellData)
@@ -53,7 +53,14 @@ else
     private void RestartGame()
     {
         _areShipsDefeated = false;
-        _ships = GameEngine.InitializeGame(Size, _shipTypes);
+        InitializeShips();
+    }
+
+    private void InitializeShips()
+    {
+        var initializedShips = GameEngine.InitializeGame(Size, _shipTypes);
+        if (initializedShips is not null)
+            _ships = initializedShips;
     }
 
 }
